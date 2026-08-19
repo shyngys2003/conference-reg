@@ -1,0 +1,226 @@
+.admin-page {
+  min-height: 100dvh;
+  width: 100%;
+  padding: 24px 16px 60px;
+  background: var(--cream);
+}
+
+.admin-print-header {
+  display: none;
+}
+
+.admin-toolbar {
+  max-width: 1100px;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-heading h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--green-deep);
+  letter-spacing: 0.04em;
+}
+
+.admin-heading p {
+  margin: 4px 0 0;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--gold);
+  font-weight: 600;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-search {
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  color: var(--green-ink);
+  min-width: 220px;
+  outline: none;
+}
+
+.admin-search:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 4px var(--gold-soft);
+}
+
+.admin-btn {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  color: var(--green-deep);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.admin-btn:hover {
+  background: var(--cream-dim);
+}
+
+.admin-btn:active {
+  transform: scale(0.97);
+}
+
+.admin-btn.primary {
+  background: var(--green-deep);
+  border-color: var(--green-deep);
+  color: #fff;
+}
+
+.admin-btn.primary:hover {
+  background: var(--green-darker);
+}
+
+.admin-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.admin-error {
+  max-width: 1100px;
+  margin: 0 auto 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(179, 65, 58, 0.08);
+  border: 1px solid rgba(179, 65, 58, 0.25);
+  color: #b3413a;
+  font-family: var(--font-body);
+  font-size: 13px;
+}
+
+.admin-table-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  overflow-x: auto;
+  box-shadow: 0 18px 40px -28px rgba(18, 38, 29, 0.4);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  min-width: 560px;
+}
+
+.admin-table th {
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold);
+  background: var(--cream-dim);
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--green-ink);
+  vertical-align: top;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tr:hover td {
+  background: var(--cream-dim);
+}
+
+.admin-col-time {
+  color: rgba(18, 38, 29, 0.55);
+  white-space: nowrap;
+}
+
+.admin-empty {
+  text-align: center;
+  color: rgba(18, 38, 29, 0.45);
+  padding: 28px 14px !important;
+}
+
+@media (max-width: 640px) {
+  .admin-actions {
+    width: 100%;
+  }
+  .admin-search {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+@media print {
+  .admin-page {
+    padding: 0;
+    background: #fff;
+  }
+  .admin-print-header {
+    display: block;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+  .admin-print-org {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .admin-print-title {
+    margin: 4px 0 0;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .admin-print-theme {
+    margin: 6px 0 0;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+  }
+  .admin-actions,
+  .admin-heading p {
+    display: none;
+  }
+  .admin-heading h1 {
+    font-size: 16px;
+  }
+  .admin-table-wrap {
+    box-shadow: none;
+    border-radius: 0;
+    border: none;
+  }
+  .admin-table th {
+    background: #fff;
+    color: #000;
+  }
+  .admin-col-time {
+    display: none;
+  }
+}
