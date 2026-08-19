@@ -180,6 +180,7 @@
   font-family: var(--font-body);
   font-size: 12.5px;
   line-height: 1.6;
+  letter-spacing: 0.01em;
   color: var(--green-ink);
   font-weight: 500;
 }
@@ -208,6 +209,7 @@
 .field input {
   font-family: var(--font-body);
   font-size: 16px;
+  letter-spacing: 0.01em;
   padding: 14px 15px;
   border-radius: 12px;
   border: 1.5px solid var(--line);

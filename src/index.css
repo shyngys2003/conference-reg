@@ -11,7 +11,7 @@
   --line: rgba(27, 67, 50, 0.14);
 
   --font-display: "Playfair Display", "Georgia", serif;
-  --font-body: "Inter", -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Inter", "Noto Sans", "Roboto", -apple-system, "Segoe UI", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -28,6 +28,15 @@ body {
   color: var(--green-ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  /* Kazakh letters (ә, ғ, қ, ң, ө, ұ, і, h) can visually collide with
+     neighbouring glyphs on some mobile renderers when ligatures/contextual
+     kerning features and synthetic bold/italic substitution kick in.
+     Turning these off keeps every glyph at its own fixed advance width. */
+  font-variant-ligatures: none;
+  font-synthesis: none;
+  -webkit-font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
+  font-feature-settings: "liga" 0, "clig" 0, "calt" 0;
+  text-rendering: optimizeSpeed;
 }
 
 #root { width: 100%; }
