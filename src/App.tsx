@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import LoadingScreen from "./LoadingScreen";
 import { APPS_SCRIPT_URL } from "./config";
@@ -18,15 +18,70 @@ interface FormErrors {
 
 const initialForm: FormState = { fullName: "", workplace: "", position: "" };
 
+type Phase = "form" | "morphing" | "exiting" | "success";
+
+const CONFETTI_COLORS = ["#e4c874", "#b08d2f", "#1b4332", "#fbfaf7", "#e4c874"];
+
+interface ConfettiPiece {
+  id: number;
+  left: number;
+  delay: number;
+  duration: number;
+  drift: number;
+  rotate: number;
+  color: string;
+  size: number;
+  shape: "circle" | "rect";
+}
+
+function makeConfetti(count: number): ConfettiPiece[] {
+  return Array.from({ length: count }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 0.25,
+    duration: 1.1 + Math.random() * 0.9,
+    drift: (Math.random() - 0.5) * 120,
+    rotate: Math.random() * 360,
+    color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+    size: 5 + Math.random() * 5,
+    shape: Math.random() > 0.5 ? "circle" : "rect",
+  }));
+}
+
 function App() {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState<FormState>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [phase, setPhase] = useState<Phase>("form");
   const [regNumber, setRegNumber] = useState<number | null>(null);
+  const [displayNumber, setDisplayNumber] = useState(0);
   const [submittedName, setSubmittedName] = useState("");
+  const confetti = useMemo(() => makeConfetti(34), []);
+  const rafRef = useRef<number | null>(null);
+
+  // Count-up animation for the registration number once we enter the success phase.
+  useEffect(() => {
+    if (phase !== "success" || regNumber === null) return;
+    const duration = 700;
+    const start = performance.now();
+    const from = 0;
+    const to = regNumber;
+
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out-cubic
+      setDisplayNumber(Math.round(from + (to - from) * eased));
+      if (t < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [phase, regNumber]);
 
   if (loading) {
     return <LoadingScreen onDone={() => setLoading(false)} />;
@@ -78,26 +133,54 @@ function App() {
       if (!data.ok) throw new Error(data.error || "Белгісіз қате");
       setSubmittedName(form.fullName.trim());
       setRegNumber(typeof data.number === "number" ? data.number : null);
-      setSuccess(true);
+
+      // Wow-sequence: button morphs into a checkmark, the form card then
+      // dissolves away, and the success card rises in with confetti.
+      setSubmitting(false);
+      setPhase("morphing");
+      window.setTimeout(() => setPhase("exiting"), 700);
+      window.setTimeout(() => setPhase("success"), 700 + 420);
     } catch {
       setSubmitError(
         "Тіркеу кезінде қате пайда болды. Интернет байланысын тексеріп, қайталап көріңіз."
       );
-    } finally {
       setSubmitting(false);
     }
   };
 
-  if (success) {
+  if (phase === "success") {
     return (
       <div className="page">
+        <div className="confetti-layer" aria-hidden="true">
+          {confetti.map((p) => (
+            <span
+              key={p.id}
+              className={`confetti-piece confetti-${p.shape}`}
+              style={
+                {
+                  left: `${p.left}%`,
+                  background: p.color,
+                  width: `${p.size}px`,
+                  height: p.shape === "rect" ? `${p.size * 0.4}px` : `${p.size}px`,
+                  animationDelay: `${p.delay}s`,
+                  animationDuration: `${p.duration}s`,
+                  "--drift": `${p.drift}px`,
+                  "--rot": `${p.rotate}deg`,
+                } as React.CSSProperties
+              }
+            />
+          ))}
+        </div>
+
         <div className="card success-card">
           <span className="corner corner-tl" aria-hidden="true" />
           <span className="corner corner-tr" aria-hidden="true" />
           <span className="corner corner-bl" aria-hidden="true" />
           <span className="corner corner-br" aria-hidden="true" />
 
-          <div className="check-mark" aria-hidden="true">
+          <div className="success-glow" aria-hidden="true" />
+
+          <div className="check-mark check-mark-burst" aria-hidden="true">
             <svg viewBox="0 0 52 52">
               <circle className="check-circle" cx="26" cy="26" r="24" fill="none" />
               <path className="check-path" fill="none" d="M14 27l7 7 17-17" />
@@ -108,10 +191,10 @@ function App() {
           {submittedName && <p className="success-name">{submittedName}</p>}
 
           {regNumber !== null && (
-            <div className="success-number">
+            <div className="success-number stamp-in">
               <span className="success-number-label">Тіркеу нөмірі</span>
               <span className="success-number-value">
-                №{String(regNumber).padStart(3, "0")}
+                №{String(displayNumber).padStart(3, "0")}
               </span>
             </div>
           )}
@@ -127,7 +210,7 @@ function App() {
 
   return (
     <div className="page">
-      <div className="card">
+      <div className={`card${phase === "exiting" ? " card-exit" : ""}`}>
         <div className="card-banner">
           <img src="/assets/school-building.jpg" alt="Мектеп ғимараты" />
         </div>
@@ -209,9 +292,26 @@ function App() {
 
           {submitError && <p className="submit-error">{submitError}</p>}
 
-          <button type="submit" className="submit-btn" disabled={submitting}>
+          <button
+            type="submit"
+            className={`submit-btn${phase === "morphing" ? " morphing" : ""}`}
+            disabled={submitting || phase === "morphing"}
+          >
             {submitting && <span className="btn-spinner" aria-hidden="true" />}
-            <span>{submitting ? "ЖІБЕРІЛУДЕ..." : "ТІРКЕЛУ"}</span>
+            <span className="btn-label">
+              {submitting ? "ЖІБЕРІЛУДЕ..." : "ТІРКЕЛУ"}
+            </span>
+            <svg
+              className="btn-check"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path
+                className="btn-check-path"
+                fill="none"
+                d="M5 12.5l4.5 4.5L19 7"
+              />
+            </svg>
           </button>
         </form>
       </div>
