@@ -54,6 +54,12 @@ function App() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [shakeFields, setShakeFields] = useState(false);
+  const fieldRefs = useRef<Record<keyof FormState, HTMLInputElement | null>>({
+    fullName: null,
+    workplace: null,
+    position: null,
+  });
   const [phase, setPhase] = useState<Phase>("form");
   const [regNumber, setRegNumber] = useState<number | null>(null);
   const [displayNumber, setDisplayNumber] = useState(0);
@@ -101,8 +107,11 @@ function App() {
     return next;
   };
 
-  const fieldClass = (field: keyof FormState) =>
-    errors[field] ? "invalid" : form[field].trim().length > 0 ? "valid" : "";
+  const fieldClass = (field: keyof FormState) => {
+    const classes = errors[field] ? ["invalid"] : form[field].trim().length > 0 ? ["valid"] : [];
+    if (errors[field] && shakeFields) classes.push("shake");
+    return classes.join(" ");
+  };
 
   const handleChange =
     (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +123,15 @@ function App() {
     e.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    if (Object.keys(nextErrors).length > 0) {
+      setShakeFields(false);
+      window.requestAnimationFrame(() => setShakeFields(true));
+      window.setTimeout(() => setShakeFields(false), 460);
+
+      const firstInvalid = (Object.keys(nextErrors) as Array<keyof FormState>)[0];
+      window.setTimeout(() => fieldRefs.current[firstInvalid]?.focus(), 0);
+      return;
+    }
 
     setSubmitting(true);
     setSubmitError("");
@@ -257,6 +274,7 @@ function App() {
             <span className="field-label">Аты-жөні</span>
             <input
               type="text"
+              ref={(el) => (fieldRefs.current.fullName = el)}
               value={form.fullName}
               onChange={handleChange("fullName")}
               placeholder="Толық аты-жөніңізді енгізіңіз"
@@ -270,6 +288,7 @@ function App() {
             <span className="field-label">Жұмыс орны</span>
             <input
               type="text"
+              ref={(el) => (fieldRefs.current.workplace = el)}
               value={form.workplace}
               onChange={handleChange("workplace")}
               placeholder="Мекеме атауын енгізіңіз"
@@ -282,6 +301,7 @@ function App() {
             <span className="field-label">Лауазымы</span>
             <input
               type="text"
+              ref={(el) => (fieldRefs.current.position = el)}
               value={form.position}
               onChange={handleChange("position")}
               placeholder="Лауазымыңызды енгізіңіз"
@@ -314,10 +334,6 @@ function App() {
             </svg>
           </button>
         </form>
-      </div>
-      <div className="author-credit" aria-label="Автор сайта">
-        <span>crafted by</span>
-        <strong>Шыңғыс</strong>
       </div>
     </div>
   );
