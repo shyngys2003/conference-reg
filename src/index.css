@@ -9,6 +9,9 @@
   --cream: #fbfaf7;
   --cream-dim: #f3efe5;
   --line: rgba(27, 67, 50, 0.14);
+  --green-tint: rgba(27, 67, 50, 0.06);
+  --gold-tint: rgba(176, 141, 47, 0.08);
+  --shadow-ink: rgba(14, 44, 34, 0.5);
 
   --font-display: "Playfair Display", "Georgia", serif;
   --font-body: "Inter", "Noto Sans", "Roboto", -apple-system, "Segoe UI", sans-serif;

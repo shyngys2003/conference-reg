@@ -54,7 +54,7 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(14, 44, 34, 0.15) 0%, rgba(14, 44, 34, 0.05) 55%, #ffffff 100%);
+    linear-gradient(180deg, rgba(14, 44, 34, 0.32) 0%, rgba(14, 44, 34, 0.08) 50%, #ffffff 100%);
 }
 
 @keyframes rise {
@@ -75,6 +75,12 @@
 .corner-bl { bottom: 10px; left: 10px; border-right: none; border-top: none; border-radius: 0 0 0 6px; }
 .corner-br { bottom: 10px; right: 10px; border-left: none; border-top: none; border-radius: 0 0 6px 0; }
 
+.org-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .logo-wrap {
   display: inline-flex;
   padding: 5px;
@@ -82,7 +88,7 @@
   background: conic-gradient(from 180deg, var(--gold-light), var(--gold), var(--gold-light));
   margin-top: -46px;
   margin-bottom: 4px;
-  box-shadow: 0 8px 20px -8px rgba(14, 44, 34, 0.5);
+  box-shadow: 0 8px 20px -8px var(--shadow-ink);
   position: relative;
   z-index: 2;
 }
@@ -233,6 +239,15 @@
   border-color: #b3413a;
 }
 
+.field input.valid {
+  border-color: var(--gold);
+  background: var(--gold-tint);
+}
+
+.field input.valid:focus {
+  background: #fff;
+}
+
 .error {
   font-family: var(--font-body);
   font-size: 12px;
@@ -254,6 +269,10 @@
 .submit-btn {
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   margin-top: 8px;
   padding: 17px;
   font-family: var(--font-body);
@@ -267,6 +286,21 @@
   cursor: pointer;
   transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
   box-shadow: 0 14px 28px -14px rgba(27, 67, 50, 0.6);
+  min-height: 52px;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .submit-btn span {
@@ -350,6 +384,43 @@
   line-height: 1.4;
 }
 
+.success-name {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--green-deep);
+  margin: 0 0 16px;
+}
+
+.success-number {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto 20px;
+  padding: 12px 28px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--cream-dim), var(--cream));
+  border: 1px solid var(--line);
+}
+
+.success-number-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.success-number-value {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--green-deep);
+  letter-spacing: 0.03em;
+}
+
 .success-text {
   font-family: var(--font-body);
   font-size: 14px;
@@ -363,7 +434,121 @@
   font-size: 16px;
   font-weight: 700;
   color: var(--gold);
-  margin: 0;
+  margin: 0 0 24px;
+}
+
+.reset-btn {
+  width: 100%;
+  padding: 14px;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--green-deep);
+  background: transparent;
+  border: 1.5px solid var(--line);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.reset-btn:hover {
+  border-color: var(--gold);
+  background: var(--gold-tint);
+}
+
+/* Tablet and up: a little breathing room, slightly wider card */
+@media (min-width: 768px) {
+  .page {
+    padding: 56px 24px 72px;
+  }
+
+  .card {
+    max-width: 480px;
+  }
+
+  .card-banner {
+    height: 156px;
+  }
+
+  .event-title {
+    font-size: 21px;
+  }
+
+  .event-title-accent {
+    font-size: 24px;
+  }
+}
+
+/* Desktop: give the eye more context around the card without stretching it */
+@media (min-width: 1024px) {
+  .page {
+    padding: 72px 24px 96px;
+    align-items: center;
+    min-height: 100dvh;
+  }
+
+  .card {
+    max-width: 508px;
+  }
+
+  .card-banner {
+    height: 176px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .card {
+    max-width: 536px;
+  }
+}
+
+/* Small phones: tighten spacing, keep the CTA comfortably tappable */
+@media (max-width: 390px) {
+  .page {
+    padding: 24px 12px 40px;
+  }
+
+  .card {
+    border-radius: 18px;
+    padding: 0 18px 28px;
+  }
+
+  .card-banner {
+    margin: 0 -18px 0;
+    height: 112px;
+  }
+
+  .event-title {
+    font-size: 17.5px;
+  }
+
+  .event-title-accent {
+    font-size: 20px;
+  }
+
+  .theme-text {
+    font-size: 12px;
+  }
+
+  .success-card {
+    padding: 36px 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .theme-box {
+    padding: 13px 13px 15px;
+  }
+
+  .field input {
+    padding: 12px 13px;
+  }
+
+  .submit-btn {
+    padding: 15px;
+    font-size: 14px;
+  }
 }
 
 @media print {

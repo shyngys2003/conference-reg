@@ -25,6 +25,8 @@ function App() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [regNumber, setRegNumber] = useState<number | null>(null);
+  const [submittedName, setSubmittedName] = useState("");
 
   if (loading) {
     return <LoadingScreen onDone={() => setLoading(false)} />;
@@ -43,6 +45,9 @@ function App() {
     }
     return next;
   };
+
+  const fieldClass = (field: keyof FormState) =>
+    errors[field] ? "invalid" : form[field].trim().length > 0 ? "valid" : "";
 
   const handleChange =
     (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,6 +76,8 @@ function App() {
       });
       const data = await res.json();
       if (!data.ok) throw new Error(data.error || "Белгісіз қате");
+      setSubmittedName(form.fullName.trim());
+      setRegNumber(typeof data.number === "number" ? data.number : null);
       setSuccess(true);
     } catch {
       setSubmitError(
@@ -79,6 +86,15 @@ function App() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleReset = () => {
+    setForm(initialForm);
+    setErrors({});
+    setSubmitError("");
+    setRegNumber(null);
+    setSubmittedName("");
+    setSuccess(false);
   };
 
   if (success) {
@@ -97,12 +113,26 @@ function App() {
             </svg>
           </div>
           <h1 className="success-title">ТІРКЕУ СӘТТІ АЯҚТАЛДЫ!</h1>
+
+          {submittedName && <p className="success-name">{submittedName}</p>}
+
+          {regNumber !== null && (
+            <div className="success-number">
+              <span className="success-number-label">Тіркеу нөмірі</span>
+              <span className="success-number-value">
+                №{String(regNumber).padStart(3, "0")}
+              </span>
+            </div>
+          )}
+
           <p className="success-text">
-            Құрметті қатысушы,
-            <br />
-            конференцияға тіркелуіңіз қабылданды.
+            Құрметті қатысушы, конференцияға тіркелуіңіз қабылданды.
           </p>
           <p className="success-thanks">Сізге рақмет!</p>
+
+          <button type="button" className="reset-btn" onClick={handleReset}>
+            Жаңа тіркеу
+          </button>
         </div>
       </div>
     );
@@ -120,15 +150,16 @@ function App() {
         <span className="corner corner-bl" aria-hidden="true" />
         <span className="corner corner-br" aria-hidden="true" />
 
-        <div className="logo-wrap">
-          <img
-            src="/assets/logo.jpeg"
-            alt="№11 Жалпы орта білім беретін мектебі"
-            className="logo"
-          />
+        <div className="org-header">
+          <div className="logo-wrap">
+            <img
+              src="/assets/logo.jpeg"
+              alt="№11 Жалпы орта білім беретін мектебі"
+              className="logo"
+            />
+          </div>
+          <p className="org-name">«№11 Жалпы орта білім беретін мектебі» КММ</p>
         </div>
-
-        <p className="org-name">«№11 Жалпы орта білім беретін мектебі» КММ</p>
 
         <div className="divider" aria-hidden="true">
           <span />
@@ -159,7 +190,7 @@ function App() {
               value={form.fullName}
               onChange={handleChange("fullName")}
               placeholder="Толық аты-жөніңізді енгізіңіз"
-              className={errors.fullName ? "invalid" : ""}
+              className={fieldClass("fullName")}
               autoComplete="name"
             />
             {errors.fullName && <span className="error">{errors.fullName}</span>}
@@ -172,7 +203,7 @@ function App() {
               value={form.workplace}
               onChange={handleChange("workplace")}
               placeholder="Мекеме атауын енгізіңіз"
-              className={errors.workplace ? "invalid" : ""}
+              className={fieldClass("workplace")}
             />
             {errors.workplace && <span className="error">{errors.workplace}</span>}
           </label>
@@ -184,7 +215,7 @@ function App() {
               value={form.position}
               onChange={handleChange("position")}
               placeholder="Лауазымыңызды енгізіңіз"
-              className={errors.position ? "invalid" : ""}
+              className={fieldClass("position")}
             />
             {errors.position && <span className="error">{errors.position}</span>}
           </label>
@@ -192,6 +223,7 @@ function App() {
           {submitError && <p className="submit-error">{submitError}</p>}
 
           <button type="submit" className="submit-btn" disabled={submitting}>
+            {submitting && <span className="btn-spinner" aria-hidden="true" />}
             <span>{submitting ? "ЖІБЕРІЛУДЕ..." : "ТІРКЕЛУ"}</span>
           </button>
         </form>
