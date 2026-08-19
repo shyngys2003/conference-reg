@@ -5,7 +5,8 @@ interface Props {
   onDone: () => void;
 }
 
-const AUTO_ADVANCE_MS = 2200;
+const AUTO_ADVANCE_MS = 3300;
+const RING_DELAY_MS = 150;
 
 function LoadingScreen({ onDone }: Props) {
   const [leaving, setLeaving] = useState(false);
@@ -21,10 +22,26 @@ function LoadingScreen({ onDone }: Props) {
     return () => clearTimeout(t);
   }, [leaving, onDone]);
 
+  const ringStyle = {
+    "--draw-duration": `${AUTO_ADVANCE_MS - RING_DELAY_MS}ms`,
+    "--ring-delay": `${RING_DELAY_MS}ms`,
+    "--breathe-delay": `${AUTO_ADVANCE_MS}ms`,
+  } as React.CSSProperties;
+
   return (
     <div className={`loading-screen${leaving ? " leaving" : ""}`}>
       <div className="loading-photo" aria-hidden="true">
         <img src="/assets/school-building.jpg" alt="" />
+      </div>
+      <div className="loading-dust" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
       </div>
       <div className="loading-ornament top" aria-hidden="true" />
       <div className="seal-wrap">
@@ -42,6 +59,7 @@ function LoadingScreen({ onDone }: Props) {
             cy="100"
             r="92"
             fill="none"
+            style={ringStyle}
           />
         </svg>
         <img src="/assets/logo.jpeg" alt="" className="seal-logo" />
@@ -52,10 +70,13 @@ function LoadingScreen({ onDone }: Props) {
       </p>
       <p className="loading-event">ТАМЫЗ КОНФЕРЕНЦИЯСЫ</p>
 
-      <div className="loading-dots" role="status" aria-label="Жүктелуде">
-        <span />
-        <span />
-        <span />
+      <div
+        className="loading-progress"
+        role="status"
+        aria-label="Жүктелуде"
+        style={ringStyle}
+      >
+        <span className="loading-progress-fill" />
       </div>
     </div>
   );
