@@ -437,26 +437,6 @@
   margin: 0 0 24px;
 }
 
-.reset-btn {
-  width: 100%;
-  padding: 14px;
-  font-family: var(--font-body);
-  font-size: 13.5px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--green-deep);
-  background: transparent;
-  border: 1.5px solid var(--line);
-  border-radius: 13px;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.reset-btn:hover {
-  border-color: var(--gold);
-  background: var(--gold-tint);
-}
-
 /* Tablet and up: a little breathing room, slightly wider card */
 @media (min-width: 768px) {
   .page {

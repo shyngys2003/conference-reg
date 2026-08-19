@@ -154,11 +154,6 @@
   background: var(--cream-dim);
 }
 
-.admin-col-time {
-  color: rgba(18, 38, 29, 0.55);
-  white-space: nowrap;
-}
-
 .admin-col-actions {
   width: 1%;
   white-space: nowrap;
@@ -247,7 +242,6 @@
     background: #fff;
     color: #000;
   }
-  .admin-col-time,
   .admin-col-actions {
     display: none;
   }

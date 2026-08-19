@@ -123,7 +123,6 @@ function AdminPage() {
               <th>Аты-жөні</th>
               <th>Жұмыс орны</th>
               <th>Лауазымы</th>
-              <th className="admin-col-time">Тіркелген уақыты</th>
               <th className="admin-col-actions">Әрекет</th>
             </tr>
           </thead>
@@ -134,7 +133,6 @@ function AdminPage() {
                 <td>{p.fullName}</td>
                 <td>{p.workplace}</td>
                 <td>{p.position}</td>
-                <td className="admin-col-time">{p.timestamp}</td>
                 <td className="admin-col-actions">
                   <button
                     type="button"
@@ -149,7 +147,7 @@ function AdminPage() {
             ))}
             {!loading && filtered.length === 0 && (
               <tr>
-                <td colSpan={6} className="admin-empty">
+                <td colSpan={5} className="admin-empty">
                   Қатысушылар табылмады
                 </td>
               </tr>

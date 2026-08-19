@@ -88,15 +88,6 @@ function App() {
     }
   };
 
-  const handleReset = () => {
-    setForm(initialForm);
-    setErrors({});
-    setSubmitError("");
-    setRegNumber(null);
-    setSubmittedName("");
-    setSuccess(false);
-  };
-
   if (success) {
     return (
       <div className="page">
@@ -129,10 +120,6 @@ function App() {
             Құрметті қатысушы, конференцияға тіркелуіңіз қабылданды.
           </p>
           <p className="success-thanks">Сізге рақмет!</p>
-
-          <button type="button" className="reset-btn" onClick={handleReset}>
-            Жаңа тіркеу
-          </button>
         </div>
       </div>
     );
