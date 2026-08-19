@@ -15,6 +15,7 @@ function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
+  const [deletingNumber, setDeletingNumber] = useState<number | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -34,6 +35,36 @@ function AdminPage() {
   useEffect(() => {
     load();
   }, []);
+
+  const removeParticipant = async (participant: Participant) => {
+    const confirmed = window.confirm(
+      `Удалить участника «${participant.fullName}»?\n\nЭто действие нельзя отменить.`
+    );
+    if (!confirmed) return;
+
+    setDeletingNumber(participant.number);
+    setError("");
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "delete", number: participant.number }),
+      });
+      const data = await res.json();
+      if (!data.ok) throw new Error(data.error || "Удаление не удалось");
+
+      setParticipants((current) =>
+        current
+          .filter((p) => p.number !== participant.number)
+          .map((p, index) => ({ ...p, number: index + 1 }))
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Не удалось удалить участника.");
+    } finally {
+      setDeletingNumber(null);
+    }
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -93,6 +124,7 @@ function AdminPage() {
               <th>Жұмыс орны</th>
               <th>Лауазымы</th>
               <th className="admin-col-time">Тіркелген уақыты</th>
+              <th className="admin-col-actions">Әрекет</th>
             </tr>
           </thead>
           <tbody>
@@ -103,11 +135,21 @@ function AdminPage() {
                 <td>{p.workplace}</td>
                 <td>{p.position}</td>
                 <td className="admin-col-time">{p.timestamp}</td>
+                <td className="admin-col-actions">
+                  <button
+                    type="button"
+                    className="admin-delete-btn"
+                    onClick={() => removeParticipant(p)}
+                    disabled={deletingNumber !== null}
+                  >
+                    {deletingNumber === p.number ? "Удаление..." : "Удалить"}
+                  </button>
+                </td>
               </tr>
             ))}
             {!loading && filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="admin-empty">
+                <td colSpan={6} className="admin-empty">
                   Қатысушылар табылмады
                 </td>
               </tr>

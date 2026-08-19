@@ -17,6 +17,11 @@ function getSheet_() {
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
+
+    if (data.action === "delete") {
+      return deleteParticipant_(data.number);
+    }
+
     const fullName = (data.fullName || "").trim();
     const workplace = (data.workplace || "").trim();
     const position = (data.position || "").trim();
@@ -38,6 +43,43 @@ function doPost(e) {
     return jsonResponse_({ ok: true, number: nextNumber });
   } catch (err) {
     return jsonResponse_({ ok: false, error: String(err) });
+  }
+}
+
+function deleteParticipant_(number) {
+  const participantNumber = Number(number);
+  if (!Number.isInteger(participantNumber) || participantNumber < 1) {
+    return jsonResponse_({ ok: false, error: "Некорректный номер участника" });
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+
+  try {
+    const sheet = getSheet_();
+    const lastRow = sheet.getLastRow();
+    const row = participantNumber + 1; // первая строка после заголовка — №1
+
+    if (row > lastRow) {
+      return jsonResponse_({ ok: false, error: "Участник не найден" });
+    }
+
+    const storedNumber = Number(sheet.getRange(row, 1).getValue());
+    if (storedNumber !== participantNumber) {
+      return jsonResponse_({ ok: false, error: "Участник не найден" });
+    }
+
+    sheet.deleteRow(row);
+
+    const remainingRows = sheet.getLastRow() - 1;
+    if (remainingRows > 0) {
+      sheet.getRange(2, 1, remainingRows, 1)
+        .setValues(Array.from({ length: remainingRows }, (_, index) => [index + 1]));
+    }
+
+    return jsonResponse_({ ok: true });
+  } finally {
+    lock.releaseLock();
   }
 }
 
