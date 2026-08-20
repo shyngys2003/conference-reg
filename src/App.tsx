@@ -54,6 +54,12 @@ function App() {
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [shakeFields, setShakeFields] = useState(false);
+  const fieldRefs = useRef<Record<keyof FormState, HTMLInputElement | null>>({
+    fullName: null,
+    workplace: null,
+    position: null,
+  });
   const [phase, setPhase] = useState<Phase>("form");
   const [regNumber, setRegNumber] = useState<number | null>(null);
   const [displayNumber, setDisplayNumber] = useState(0);
@@ -101,8 +107,11 @@ function App() {
     return next;
   };
 
-  const fieldClass = (field: keyof FormState) =>
-    errors[field] ? "invalid" : form[field].trim().length > 0 ? "valid" : "";
+  const fieldClass = (field: keyof FormState) => {
+    const classes = errors[field] ? ["invalid"] : form[field].trim().length > 0 ? ["valid"] : [];
+    if (errors[field] && shakeFields) classes.push("shake");
+    return classes.join(" ");
+  };
 
   const handleChange =
     (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +123,15 @@ function App() {
     e.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0) return;
+    if (Object.keys(nextErrors).length > 0) {
+      setShakeFields(false);
+      window.requestAnimationFrame(() => setShakeFields(true));
+      window.setTimeout(() => setShakeFields(false), 460);
+
+      const firstInvalid = (Object.keys(nextErrors) as Array<keyof FormState>)[0];
+      window.setTimeout(() => fieldRefs.current[firstInvalid]?.focus(), 0);
+      return;
+    }
 
     setSubmitting(true);
     setSubmitError("");
@@ -238,8 +255,7 @@ function App() {
         </div>
 
         <h1 className="event-title">
-          Білім беру қызметкерлерінің
-          <br />
+          <span className="event-title-eyebrow">Білім беру қызметкерлерінің</span>
           <span className="event-title-accent">Тамыз конференциясы</span>
         </h1>
 
@@ -255,38 +271,73 @@ function App() {
         <form className="reg-form" onSubmit={handleSubmit} noValidate>
           <label className="field">
             <span className="field-label">Аты-жөні</span>
-            <input
-              type="text"
-              value={form.fullName}
-              onChange={handleChange("fullName")}
-              placeholder="Толық аты-жөніңізді енгізіңіз"
-              className={fieldClass("fullName")}
-              autoComplete="name"
-            />
+            <span className="input-wrap">
+              <input
+                type="text"
+                ref={(el) => { fieldRefs.current.fullName = el; }}
+                value={form.fullName}
+                onChange={handleChange("fullName")}
+                placeholder="Толық аты-жөніңізді енгізіңіз"
+                className={fieldClass("fullName")}
+                autoComplete="name"
+              />
+            <svg className="field-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <circle cx="10" cy="6.5" r="3.25" stroke="currentColor" strokeWidth="1.5" />
+                <path
+                  d="M3.5 17c0-3.31 2.91-6 6.5-6s6.5 2.69 6.5 6"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+              </svg>
+              </span>
             {errors.fullName && <span className="error">{errors.fullName}</span>}
           </label>
 
           <label className="field">
             <span className="field-label">Жұмыс орны</span>
-            <input
-              type="text"
-              value={form.workplace}
-              onChange={handleChange("workplace")}
-              placeholder="Мекеме атауын енгізіңіз"
-              className={fieldClass("workplace")}
-            />
+            <span className="input-wrap">
+              <input
+                type="text"
+                ref={(el) => { fieldRefs.current.workplace = el; }}
+                value={form.workplace}
+                onChange={handleChange("workplace")}
+                placeholder="Мекеме атауын енгізіңіз"
+                className={fieldClass("workplace")}
+              />
+            <svg className="field-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <rect x="3" y="7" width="14" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+                <path
+                  d="M7 7V5.5A1.5 1.5 0 0 1 8.5 4h3A1.5 1.5 0 0 1 13 5.5V7"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <path d="M3 11h14" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+              </span>
             {errors.workplace && <span className="error">{errors.workplace}</span>}
           </label>
 
           <label className="field">
             <span className="field-label">Лауазымы</span>
-            <input
-              type="text"
-              value={form.position}
-              onChange={handleChange("position")}
-              placeholder="Лауазымыңызды енгізіңіз"
-              className={fieldClass("position")}
-            />
+            <span className="input-wrap">
+              <input
+                type="text"
+                ref={(el) => { fieldRefs.current.position = el; }}
+                value={form.position}
+                onChange={handleChange("position")}
+                placeholder="Лауазымыңызды енгізіңіз"
+                className={fieldClass("position")}
+              />
+            <svg className="field-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path
+                  d="M10 3l1.9 3.9 4.3.6-3.1 3 .7 4.3-3.8-2-3.8 2 .7-4.3-3.1-3 4.3-.6L10 3z"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              </span>
             {errors.position && <span className="error">{errors.position}</span>}
           </label>
 

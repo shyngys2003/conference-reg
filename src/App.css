@@ -8,7 +8,10 @@
   background:
     radial-gradient(circle at 50% -10%, var(--gold-soft), transparent 45%),
     radial-gradient(circle at 100% 100%, rgba(27, 67, 50, 0.06), transparent 40%),
+    url("/assets/ornament.svg"),
     var(--cream);
+  background-repeat: no-repeat, no-repeat, repeat, no-repeat;
+  background-size: auto, auto, 72px 72px, auto;
   animation: page-in 0.5s ease both;
 }
 
@@ -135,19 +138,40 @@
 
 .event-title {
   margin: 0 0 18px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 19px;
-  line-height: 1.38;
-  color: var(--green-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.event-title-eyebrow {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(18, 38, 29, 0.55);
 }
 
 .event-title-accent {
-  color: var(--green-deep);
+  font-family: var(--font-display);
   font-weight: 800;
-  font-size: 22px;
-  display: inline-block;
-  margin-top: 2px;
+  font-size: 27px;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  color: var(--gold);
+  background: linear-gradient(155deg, var(--gold-light), var(--gold) 65%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@supports not (background-clip: text) {
+  .event-title-accent {
+    -webkit-text-fill-color: initial;
+    background: none;
+    color: var(--gold);
+  }
 }
 
 .theme-box {
@@ -212,11 +236,37 @@
   color: var(--green-deep);
 }
 
+.input-wrap {
+  position: relative;
+  display: block;
+}
+
+.field-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: rgba(27, 67, 50, 0.4);
+  pointer-events: none;
+  transition: color 0.15s ease;
+}
+
+.field input:focus ~ .field-icon {
+  color: var(--gold);
+}
+
+.field input.valid ~ .field-icon {
+  color: var(--gold);
+}
+
 .field input {
   font-family: var(--font-body);
   font-size: 16px;
   letter-spacing: 0.01em;
-  padding: 14px 15px;
+  width: 100%;
+  padding: 14px 15px 14px 42px;
   border-radius: 12px;
   border: 1.5px solid var(--line);
   background: var(--cream);
@@ -237,6 +287,24 @@
 
 .field input.invalid {
   border-color: #b3413a;
+}
+
+.field input.shake {
+  animation: field-shake 0.42s ease-in-out;
+}
+
+@keyframes field-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .field input.shake {
+    animation: none;
+  }
 }
 
 .field input.valid {
