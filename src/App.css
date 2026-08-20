@@ -12,7 +12,13 @@
     var(--cream);
   background-repeat: no-repeat, no-repeat, repeat, no-repeat;
   background-size: auto, auto, 72px 72px, auto;
-  animation: page-in 0.5s ease both;
+  background-position: 50% -10%, 100% 100%, 0 0, 0 0;
+  animation: page-in 0.5s ease both, ornament-drift 46s linear infinite;
+}
+
+@keyframes ornament-drift {
+  from { background-position: 50% -10%, 100% 100%, 0 0, 0 0; }
+  to { background-position: 50% -10%, 100% 100%, 72px 72px, 0 0; }
 }
 
 @keyframes page-in {

@@ -3,18 +3,22 @@ import "./LoadingScreen.css";
 
 interface Props {
   onDone: () => void;
+  onLeaveStart?: () => void;
 }
 
 const AUTO_ADVANCE_MS = 3300;
 const RING_DELAY_MS = 150;
 
-function LoadingScreen({ onDone }: Props) {
+function LoadingScreen({ onDone, onLeaveStart }: Props) {
   const [leaving, setLeaving] = useState(false);
 
   useEffect(() => {
-    const finish = setTimeout(() => setLeaving(true), AUTO_ADVANCE_MS);
+    const finish = setTimeout(() => {
+      setLeaving(true);
+      onLeaveStart?.();
+    }, AUTO_ADVANCE_MS);
     return () => clearTimeout(finish);
-  }, []);
+  }, [onLeaveStart]);
 
   useEffect(() => {
     if (!leaving) return;

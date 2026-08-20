@@ -1,0 +1,33 @@
+.gold-dust-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 6;
+}
+
+.gold-dust-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--gold-light) 0%, var(--gold) 70%, transparent 100%);
+  box-shadow: 0 0 7px 1px rgba(228, 200, 116, 0.55);
+  animation: gold-dust-fade 0.7s ease-out forwards;
+}
+
+@keyframes gold-dust-fade {
+  0% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gold-dust-layer {
+    display: none;
+  }
+}

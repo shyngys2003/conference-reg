@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import LoadingScreen from "./LoadingScreen";
+import GoldDust from "./GoldDust";
 import { APPS_SCRIPT_URL } from "./config";
 import "./App.css";
 
@@ -49,7 +50,8 @@ function makeConfetti(count: number): ConfettiPiece[] {
 }
 
 function App() {
-  const [loading, setLoading] = useState(true);
+  const [loadingVisible, setLoadingVisible] = useState(true);
+  const [formMounted, setFormMounted] = useState(false);
   const [form, setForm] = useState<FormState>(initialForm);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -88,10 +90,6 @@ function App() {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [phase, regNumber]);
-
-  if (loading) {
-    return <LoadingScreen onDone={() => setLoading(false)} />;
-  }
 
   const validate = (): FormErrors => {
     const next: FormErrors = {};
@@ -165,8 +163,10 @@ function App() {
     }
   };
 
+  let mainContent: React.ReactNode;
+
   if (phase === "success") {
-    return (
+    mainContent = (
       <div className="page">
         <div className="confetti-layer" aria-hidden="true">
           {confetti.map((p) => (
@@ -223,17 +223,17 @@ function App() {
         </div>
       </div>
     );
-  }
+  } else {
+    mainContent = (
+      <div className="page">
+        <div className={`card${phase === "exiting" ? " card-exit" : ""}`}>
+          <GoldDust />
+          <div className="card-banner">
+            <img src="/assets/school-building.jpg" alt="Мектеп ғимараты" />
+          </div>
 
-  return (
-    <div className="page">
-      <div className={`card${phase === "exiting" ? " card-exit" : ""}`}>
-        <div className="card-banner">
-          <img src="/assets/school-building.jpg" alt="Мектеп ғимараты" />
-        </div>
-
-        <span className="corner corner-tl" aria-hidden="true" />
-        <span className="corner corner-tr" aria-hidden="true" />
+          <span className="corner corner-tl" aria-hidden="true" />
+          <span className="corner corner-tr" aria-hidden="true" />
         <span className="corner corner-bl" aria-hidden="true" />
         <span className="corner corner-br" aria-hidden="true" />
 
@@ -365,8 +365,21 @@ function App() {
             </svg>
           </button>
         </form>
+        </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <>
+      {loadingVisible && (
+        <LoadingScreen
+          onLeaveStart={() => setFormMounted(true)}
+          onDone={() => setLoadingVisible(false)}
+        />
+      )}
+      {formMounted && mainContent}
+    </>
   );
 }
 
